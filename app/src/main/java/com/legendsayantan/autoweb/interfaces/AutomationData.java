@@ -18,7 +18,7 @@ public class AutomationData {
         this.name = name;
         this.jsActions = jsActions;
         this.delay = delay;
-        this.color = new Random().nextInt();
+        this.color = new Random().nextInt(4);
     }
     public AutomationData(String name, ArrayList<JsAction> jsActions) {
         this.name = name;
