@@ -1,6 +1,10 @@
 package com.legendsayantan.autoweb.interfaces;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -58,5 +62,13 @@ public class AutomationData {
         }else {
             this.delay = 100;
         }
+    }
+    public static String toJson(AutomationData automationData) throws JsonProcessingException {
+        final ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(automationData);
+    }
+    public static AutomationData fromJson(String json) throws JsonProcessingException {
+        final ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, new TypeReference<AutomationData>(){});
     }
 }

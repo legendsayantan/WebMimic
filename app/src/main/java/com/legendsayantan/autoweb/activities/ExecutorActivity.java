@@ -2,9 +2,11 @@ package com.legendsayantan.autoweb.activities;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -39,6 +41,7 @@ public class ExecutorActivity extends AppCompatActivity {
     ScriptRunner runner;
     String code = "";
     ConstraintLayout loader;
+    boolean started = false;
     @SuppressLint({"MissingInflatedId", "SetJavaScriptEnabled"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,11 @@ public class ExecutorActivity extends AppCompatActivity {
         urlText = findViewById(R.id.urlText);
         loader = findViewById(R.id.loader);
         loader.setVisibility(View.GONE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            webView.getSettings().setForceDark(
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("dark",false)?
+                    WebSettings.FORCE_DARK_ON:WebSettings.FORCE_DARK_OFF);
+        }
         webView.getSettings().setSupportZoom(true);
         WebView.setWebContentsDebuggingEnabled(true);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -84,6 +92,10 @@ public class ExecutorActivity extends AppCompatActivity {
                 urlText.setText(url);
                 pauseExecution();
                 loader.setVisibility(View.GONE);
+                if(!started && PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("auto",false)){
+                    started=true;
+                    btn.callOnClick();
+                }
             }
         });
         webView.loadUrl(data.jsActions.get(0).getUrl());

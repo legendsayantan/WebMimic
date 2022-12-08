@@ -5,13 +5,16 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
@@ -61,6 +64,12 @@ public class TrainerActivity extends AppCompatActivity {
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setDisplayZoomControls(false);
         webView.getSettings().setDomStorageEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            webView.getSettings().setForceDark(
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                            .getBoolean("dark",false)?
+                            WebSettings.FORCE_DARK_ON:WebSettings.FORCE_DARK_OFF);
+        }
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setScrollbarFadingEnabled(false);
         code = readAsset("trainer.js");
@@ -68,7 +77,7 @@ public class TrainerActivity extends AppCompatActivity {
         initialiseTestMode();
         webView.setWebViewClient(new WebViewClient(){
             @Override
-            public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 loader.setVisibility(View.VISIBLE);
             }
