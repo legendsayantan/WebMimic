@@ -140,11 +140,6 @@ public class ExecutorActivity extends AppCompatActivity {
             urlText.setText(webView.getUrl());
         },ExecutorActivity.this);
     }
-    @Override
-    public void onBackPressed() {
-        if(webView.canGoBack())webView.goBack();
-        else super.onBackPressed();
-    }
     public ArrayList<AutomationData> getList() throws JsonProcessingException {
         String data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("actions","[]");
         final ObjectMapper objectMapper = new ObjectMapper();
