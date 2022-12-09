@@ -1,12 +1,16 @@
 package com.legendsayantan.autoweb.activities;
+import static com.legendsayantan.autoweb.interfaces.AutomationData.optimise;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,6 +29,7 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.snackbar.Snackbar;
 import com.legendsayantan.autoweb.R;
 import com.legendsayantan.autoweb.interfaces.AutomationData;
 import com.legendsayantan.autoweb.interfaces.JsAction;
@@ -34,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class TrainerActivity extends AppCompatActivity {
@@ -50,6 +56,8 @@ public class TrainerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trainer);
+        //remove action bar
+        Objects.requireNonNull(getSupportActionBar()).hide();
         webView=findViewById(R.id.webView);
         btn = findViewById(R.id.btn);
         btn2 = findViewById(R.id.btn2);
@@ -70,7 +78,16 @@ public class TrainerActivity extends AppCompatActivity {
                             .getBoolean("dark",false)?
                             WebSettings.FORCE_DARK_ON:WebSettings.FORCE_DARK_OFF);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            webView.getSettings().setAlgorithmicDarkeningAllowed(PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                    .getBoolean("dark",false));
+        }
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        });
         webView.setScrollbarFadingEnabled(false);
         code = readAsset("trainer.js");
         webView.loadUrl("https://www.google.com");
@@ -103,6 +120,24 @@ public class TrainerActivity extends AppCompatActivity {
             if(webView.canGoBack())webView.goBack();
             else super.onBackPressed();
         });
+        if(Configuration.ORIENTATION_LANDSCAPE==getResources().getConfiguration().orientation){
+            data.setLandscape(true);
+            Snackbar snackbar = Snackbar.make(webView,"Start in desktop mode?",Snackbar.LENGTH_SHORT);
+            snackbar.addCallback(new Snackbar.Callback(){
+                @Override
+                public void onShown(Snackbar sb) {
+                    super.onShown(sb);
+                    snackbar.setAction("Yes", v -> {
+                        String newUA= "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36";
+                        webView.getSettings().setUserAgentString(newUA);
+                        webView.getSettings().setLoadWithOverviewMode(false);
+                        webView.reload();
+                        data.setDesktopMode(true);
+                    });
+                }
+            });
+            snackbar.show();
+        }
     }
     public void initialiseTestMode(){
         webView.setWebChromeClient(new WebChromeClient(){
@@ -111,10 +146,13 @@ public class TrainerActivity extends AppCompatActivity {
                 if(!record)return super.onConsoleMessage(consoleMessage);
                 String message = consoleMessage.message();
                 String[] split = message.split("-->");
-                if(split[0].equals("click")){
-                    data.jsActions.add(new JsAction(loadedUrl,JsAction.ActionType.click, split[1]));
-                }else if(split[0].equals("change")) {
-                    data.jsActions.add(new JsAction(loadedUrl,JsAction.ActionType.change, split[1], split.length>2?split[2]:""));
+                switch (split[0]) {
+                    case "click":
+                        data.jsActions.add(new JsAction(loadedUrl, JsAction.ActionType.click, split[1], split.length > 2 ? split[2] : ""));
+                        break;
+                    case "change":
+                        data.jsActions.add(new JsAction(loadedUrl, JsAction.ActionType.change, split[1], split.length > 2 ? split[2] : ""));
+                        break;
                 }
                 loadedUrl = webView.getUrl();
                 return super.onConsoleMessage(consoleMessage);
@@ -166,7 +204,7 @@ public class TrainerActivity extends AppCompatActivity {
             name.setHintTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             name.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             EditText time = new EditText(getApplicationContext());
-            time.setHint("Delay between actions in ms (100+)");
+            time.setHint("Delay between actions in ms (250+)"); //250ms is the minimum delay between actions
             time.setHintTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             time.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             time.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -183,7 +221,9 @@ public class TrainerActivity extends AppCompatActivity {
                             data.setDelay(Integer.parseInt(time.getText().toString()));
                             data.jsActions.add(new JsAction(webView.getUrl(),JsAction.ActionType.pause));
                             ArrayList<AutomationData> allData = getList();
-                            allData.add(optimised(data));
+                            optimise(data);
+                            System.out.println(AutomationData.toJson(data));
+                            allData.add(data);
                             saveList(allData);
                             super.onBackPressed();
                         }catch (Exception e){
@@ -198,7 +238,6 @@ public class TrainerActivity extends AppCompatActivity {
     public void saveList(ArrayList<AutomationData> list) throws JsonProcessingException {
         final ObjectMapper mapper = new ObjectMapper();
             String data = mapper.writeValueAsString(list);
-            System.out.println(data);
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("actions", data).apply();
     }
     public ArrayList<AutomationData> getList() throws JsonProcessingException {
@@ -211,20 +250,5 @@ public class TrainerActivity extends AppCompatActivity {
     public void onBackPressed() {
         if(webView.canGoBack())webView.goBack();
         else super.onBackPressed();
-    }
-
-    public AutomationData optimised(AutomationData automationData){
-        int index = 0;
-        while(index < automationData.jsActions.size()-1){
-            if(automationData.jsActions.get(index).actionType == JsAction.ActionType.change &&
-                    automationData.jsActions.get(index+1).actionType == JsAction.ActionType.change)
-            if (automationData.jsActions.get(index + 1).getElement().equals(automationData.jsActions.get(index).getElement()))
-            {
-                automationData.jsActions.remove(index);
-                continue;
-            }
-            index++;
-        }
-        return automationData;
     }
 }

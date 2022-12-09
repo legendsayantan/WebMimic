@@ -1,7 +1,8 @@
-var page = document.getElementsByTagName("*");
+var page = document.childNodes;
 var inputs = document.getElementsByTagName("input");
 var selections = document.getElementsByTagName("select");
-var clicker = "console.log('click-->'+this.id)";
+var eventBuffer;
+var clicker = "if(eventBuffer!=window.event)console.log('click-->'+window.event.srcElement.id);eventBuffer=window.event";
 var changer = "console.log('change-->'+this.id+'-->'+this.value)";
 var submitter = "console.log('submit-->'+this.id)";
 async function initViews(page,parentId) {
@@ -59,10 +60,10 @@ async function logClicks() {
 }
 async function main(){
 await initViews(page,"root");
+page = document.getElementsByTagName("*");
 await logInputs();
 await logClicks();
 await logSelections();
-await console.log('training mode initiated');
 }
 
 main();

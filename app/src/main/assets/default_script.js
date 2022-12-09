@@ -10,9 +10,6 @@ function initViews(page,parentId) {
         if (view.hasChildNodes()) {
             initViews(view.childNodes,view.id);
         }
-        if(i==page.length-1){
-            console.log("initViews done");
-        }
     }
 }
 initViews(page,"root");

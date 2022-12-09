@@ -50,13 +50,14 @@ public class ScriptRunner {
             @Override
             public void run() {
                 if(pausedIndex>=jsActions.size()-1){
+                    //webView.post(()-> webView.loadUrl(jsActions.get(jsActions.size()-1).getUrl()));
                     activity.runOnUiThread(()->Toast.makeText(activity, "Execution Complete", Toast.LENGTH_SHORT).show());
                     resetExecution();
                     worker.cancel();
                 }else {
                     activity.runOnUiThread(() -> {
                         JsAction jsAction = jsActions.get(pausedIndex);
-                        if (!webView.getUrl().equals(jsAction.getUrl())) {
+                        if (jsAction.getUrl()!=null&&!webView.getUrl().equals(jsAction.getUrl())) {
                             worker.cancel();
                             webView.setWebViewClient(new WebViewClient() {
                                 @Override
@@ -95,6 +96,7 @@ public class ScriptRunner {
     }
     public void resetExecution(){
         pausedIndex = 0;
+        pause();
     }
     public void pause(){
         if(worker!=null)worker.cancel();

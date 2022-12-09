@@ -1,7 +1,10 @@
 package com.legendsayantan.autoweb.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class ExecutorActivity extends AppCompatActivity {
@@ -47,6 +51,7 @@ public class ExecutorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_executor);
+        Objects.requireNonNull(getSupportActionBar()).hide();
         webView=findViewById(R.id.webView);
         btn = findViewById(R.id.btn);
         back = findViewById(R.id.back);
@@ -68,6 +73,11 @@ public class ExecutorActivity extends AppCompatActivity {
         webView.getSettings().setDomStorageEnabled(true);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setScrollbarFadingEnabled(false);
+        webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        });
         code = readAsset("default_script.js");
         back.setOnClickListener(v -> {
             if(webView.canGoBack())webView.goBack();
@@ -98,6 +108,12 @@ public class ExecutorActivity extends AppCompatActivity {
                 }
             }
         });
+        if(data.isLandscape())
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        if(data.isDesktopMode()) {
+            webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36");
+            webView.getSettings().setLoadWithOverviewMode(false);
+        }
         webView.loadUrl(data.jsActions.get(0).getUrl());
         if(BuildConfig.DEBUG)System.out.println(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("actions","[]"));
     }
@@ -144,5 +160,12 @@ public class ExecutorActivity extends AppCompatActivity {
         String data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("actions","[]");
         final ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(data, new TypeReference<ArrayList<AutomationData>>(){});
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(runner!=null)runner.resetExecution();
+        super.onBackPressed();
+
     }
 }
