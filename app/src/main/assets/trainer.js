@@ -2,7 +2,10 @@ var page = document.childNodes;
 var inputs = document.getElementsByTagName("input");
 var selections = document.getElementsByTagName("select");
 var eventBuffer;
-var clicker = "if(eventBuffer!=window.event)console.log('click-->'+window.event.srcElement.id);eventBuffer=window.event";
+var clicker = "event = event || window.event;"
++"var source = event.target || event.srcElement;"
++"if(eventBuffer!=event)console.log('click-->'+source.id);"
++"eventBuffer=window.event;";
 var changer = "console.log('change-->'+this.id+'-->'+this.value)";
 var submitter = "console.log('submit-->'+this.id)";
 async function initViews(page,parentId) {
@@ -43,8 +46,9 @@ async function logSelections(){
             element.setAttribute("onchange",changer);
         }
         //remove onclick attribute
-        if(element.hasAttribute("onclick")&&element.getAttribute('onclick')==changer) {
-            element.removeAttribute("onclick");
+        if(element.hasAttribute("onclick")) {
+            if(element.getAttribute('onclick')==clicker)element.removeAttribute("onclick");
+            else element.setAttribute("onclick",element.getAttribute('onclick').replace(clicker,""));
         }
     }
 }

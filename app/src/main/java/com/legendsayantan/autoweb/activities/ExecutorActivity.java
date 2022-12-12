@@ -138,7 +138,7 @@ public class ExecutorActivity extends AppCompatActivity {
         if(runner!=null)runner.pause();
         btn.setImageDrawable(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_baseline_play_circle_outline_24));
         btn.setOnClickListener((v)->{
-            Toast.makeText(getApplicationContext(),"Executing recorded data.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Executing.",Toast.LENGTH_SHORT).show();
             resumeExecution();
         });
     }
@@ -146,9 +146,14 @@ public class ExecutorActivity extends AppCompatActivity {
         execution =true;
         btn.setImageDrawable(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_baseline_pause_circle_outline_24));
         btn.setOnClickListener((v)->{
+            Toast.makeText(getApplicationContext(),"Paused.",Toast.LENGTH_SHORT).show();
             pauseExecution();
         });
         runner = new ScriptRunner(data);
+        runner.setOnPause(()->{
+            pauseExecution();
+            Toast.makeText(getApplicationContext(),"Script Paused.",Toast.LENGTH_SHORT).show();
+        });
         runner.executeOn(webView,code,()->{
             loader.setVisibility(View.VISIBLE);
         },()->{

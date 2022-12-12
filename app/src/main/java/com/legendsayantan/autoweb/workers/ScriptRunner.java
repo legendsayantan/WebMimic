@@ -1,6 +1,7 @@
 package com.legendsayantan.autoweb.workers;
 
 import static com.legendsayantan.autoweb.interfaces.JsAction.ActionType.pause;
+import static com.legendsayantan.autoweb.interfaces.JsAction.ActionType.scroll;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ public class ScriptRunner {
     Timer worker = null;
     private int pausedIndex = 0;
     ArrayList<JsAction> jsActions ;
+    Runnable onPause = () -> {};
     long delay = 100;
 
     public ScriptRunner(ArrayList<JsAction> jsActions) {
@@ -33,7 +35,7 @@ public class ScriptRunner {
     }
     public ScriptRunner(){}
 
-    public void executeOn(WebView webView, String code,Runnable pauseCallBack, Runnable resumeCallback, Activity activity) {
+    public void executeOn(WebView webView, String code, Runnable pauseCallBack, Runnable resumeCallback, Activity activity) {
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {}
@@ -83,8 +85,12 @@ public class ScriptRunner {
                                 @Override
                                 public void onPageFinished(WebView view, String url) {}}
                             );
-                            if (jsAction.actionType == pause) {
-                                activity.runOnUiThread(()->Toast.makeText(activity, "Execution paused.", Toast.LENGTH_SHORT).show());
+                            if (jsAction.actionType == scroll) {
+                                String[] split = jsAction.getValue().split("-");
+                                webView.zoomBy(Float.parseFloat(split[2]));
+                                webView.scrollTo(Integer.parseInt(split[0]),Integer.parseInt(split[1]));
+                            }else if (jsAction.actionType == pause) {
+                                activity.runOnUiThread(onPause);
                                 pause();
                             }else webView.evaluateJavascript(JsAction.getJs(jsAction), null);
                             pausedIndex++;
@@ -98,7 +104,12 @@ public class ScriptRunner {
         pausedIndex = 0;
         pause();
     }
+
     public void pause(){
         if(worker!=null)worker.cancel();
+    }
+
+    public void setOnPause(Runnable onPause) {
+        this.onPause = onPause;
     }
 }

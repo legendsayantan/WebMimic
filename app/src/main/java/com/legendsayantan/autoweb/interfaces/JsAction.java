@@ -13,6 +13,7 @@ public class JsAction {
     public enum ActionType {
         click,
         change,
+        scroll,
         pause
     }
     public ActionType actionType;
@@ -23,7 +24,6 @@ public class JsAction {
         this.element = element;
         this.value = value;
     }
-
     public JsAction(String url,ActionType actionType, String element) {
         this.url = url;
         this.actionType = actionType;
@@ -40,6 +40,8 @@ public class JsAction {
                 return debug+"document.getElementById('"+jsAction.element+"').click();";
             case change:
                 return debug+"document.getElementById('"+jsAction.element+"').value='"+jsAction.value+"';";
+            case scroll:
+                return debug;
             case pause:
                 return "console.log('Paused Execution');";
         }

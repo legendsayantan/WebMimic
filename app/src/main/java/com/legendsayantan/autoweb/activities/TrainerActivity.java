@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
@@ -50,7 +51,9 @@ public class TrainerActivity extends AppCompatActivity {
     EditText editText;
     String loadedUrl;
     String code = "console.log('start trainer mode');";
+    String windowParams;
     ConstraintLayout loader;
+    Snackbar scrollsaver;
     @SuppressLint({"MissingInflatedId", "SetJavaScriptEnabled"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,13 +111,43 @@ public class TrainerActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
                 loader.setVisibility(View.GONE);
             }
+
+            @Override
+            public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+                editText.setText(url);
+                webView.evaluateJavascript(code, s -> {});
+                loadedUrl = url;
+                super.doUpdateVisitedHistory(view, url, isReload);
+            }
         });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            webView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                if(!record)return;
+                windowParams = scrollX+"-"+scrollY+"-"+webView.getScale();
+                initialiseScrollSaver(webView);
+            });
+
+        }
         editText.setOnClickListener(v -> {
             btn.setImageDrawable(AppCompatResources.getDrawable(getApplicationContext(),R.drawable.ic_baseline_send_24));
             btn.setOnClickListener((view)->{
                 if(editText.getText().toString().isEmpty())return;
                 webView.loadUrl(editText.getText().toString());
             });
+        });
+        editText.setOnKeyListener((v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_DPAD_CENTER:
+                    case KeyEvent.KEYCODE_ENTER:
+                        if(editText.getText().toString().isEmpty())return true;
+                        webView.loadUrl(editText.getText().toString());
+                        return true;
+                    default:
+                        break;
+                }
+            }
+            return false;
         });
         back.setOnClickListener(v -> {
             if(webView.canGoBack())webView.goBack();
@@ -148,13 +181,14 @@ public class TrainerActivity extends AppCompatActivity {
                 String[] split = message.split("-->");
                 switch (split[0]) {
                     case "click":
-                        data.jsActions.add(new JsAction(loadedUrl, JsAction.ActionType.click, split[1], split.length > 2 ? split[2] : ""));
+                        data.jsActions.add(new JsAction(loadedUrl, JsAction.ActionType.click,split.length > 1 ?split[1]:"", split.length > 2 ? split[2] : ""));
                         break;
                     case "change":
-                        data.jsActions.add(new JsAction(loadedUrl, JsAction.ActionType.change, split[1], split.length > 2 ? split[2] : ""));
+                        data.jsActions.add(new JsAction(loadedUrl, JsAction.ActionType.change,split.length > 1 ?split[1]:"", split.length > 2 ? split[2] : ""));
                         break;
                 }
                 loadedUrl = webView.getUrl();
+                removeScrollSaver();
                 return super.onConsoleMessage(consoleMessage);
             }
         });
@@ -250,5 +284,17 @@ public class TrainerActivity extends AppCompatActivity {
     public void onBackPressed() {
         if(webView.canGoBack())webView.goBack();
         else super.onBackPressed();
+    }
+    public void initialiseScrollSaver(WebView webView){
+        if(scrollsaver!=null && scrollsaver.isShown())return;
+        scrollsaver = Snackbar.make(webView,"Save window position?",Snackbar.LENGTH_INDEFINITE);
+        scrollsaver.setAction("Save", v -> {
+            data.jsActions.add(new JsAction(webView.getUrl(),JsAction.ActionType.scroll,null,windowParams));
+            scrollsaver.dismiss();
+        });
+        scrollsaver.show();
+    }
+    public void removeScrollSaver(){
+        if(scrollsaver!=null && scrollsaver.isShown())scrollsaver.dismiss();
     }
 }
