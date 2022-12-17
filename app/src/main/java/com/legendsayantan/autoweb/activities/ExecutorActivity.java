@@ -64,7 +64,7 @@ public class ExecutorActivity extends AppCompatActivity {
                     WebSettings.FORCE_DARK_ON:WebSettings.FORCE_DARK_OFF);
         }
         webView.getSettings().setSupportZoom(true);
-        WebView.setWebContentsDebuggingEnabled(true);
+        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
