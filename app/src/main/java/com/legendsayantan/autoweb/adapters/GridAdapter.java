@@ -31,6 +31,10 @@ public class GridAdapter extends ArrayAdapter<AutomationData> {
         TextView textView = returnView.findViewById(R.id.textView);
         CardView cardView = returnView.findViewById(R.id.cardView);
         switch (getItem(position).color){
+            case -1:
+                //set grey
+                cardView.setCardBackgroundColor(Color.parseColor("#808080"));
+                break;
             case 0:
                 //set dark red
                 cardView.setCardBackgroundColor(Color.parseColor("#8B0000"));
@@ -47,10 +51,7 @@ public class GridAdapter extends ArrayAdapter<AutomationData> {
                 //set dark blue
                 cardView.setCardBackgroundColor(Color.parseColor("#00008B"));
                 break;
-            case 4:
-                //set grey
-                cardView.setCardBackgroundColor(Color.parseColor("#808080"));
-                break;
+
         }
         textView.setText(getItem(position).getName());
         return returnView;

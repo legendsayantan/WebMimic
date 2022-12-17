@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        data.add(new AutomationData("+\nRecord new", 4));
+        data.add(new AutomationData("+\nRecord new", -1));
         gridView.setAdapter(new GridAdapter(this, R.layout.grid_item, data));
         gridView.setOnItemClickListener((parent, view, position, id) -> {
             if (position == data.size() - 1) {
