@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
+    <color name="ic_launcher_background">#2E3133</color>
+    <color name="ic_launcher_foreground">#C1E8FF</color>
 </resources>
