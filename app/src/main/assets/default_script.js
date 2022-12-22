@@ -1,12 +1,10 @@
 /*
 @author legendsayantan
 */
-
-var page = document.childNodes;
-async function initViews(page,parentId) {
+async function initViews(node,parentId) {
     var x = 0;
-    for (var i = 0; i < page.length; i++) {
-        var view = page[i];
+    for (var i = 0; i < node.length; i++) {
+        var view = node[i];
         if (view.id == null || view.id == "") {
             view.id = parentId + "_" + x;
             x++;
@@ -31,5 +29,5 @@ async function treeObserver(){
     var observer = new MutationObserver(callback);
     observer.observe(targetNode, config);
 }
-initViews(page,"root");
+initViews(document.childNodes,"root");
 treeObserver();

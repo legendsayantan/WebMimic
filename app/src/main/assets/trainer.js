@@ -1,7 +1,7 @@
 /*
 @author legendsayantan
 */
-
+var page = document.getElementsByTagName("*");
 var inputs = document.getElementsByTagName("input");
 var selections = document.getElementsByTagName("select");
 var eventBuffer;
@@ -11,10 +11,10 @@ var clicker = "event = event || window.event;"
 +"eventBuffer=window.event;";
 var changer = "console.log('change-->'+this.id+'-->'+this.value)";
 var submitter = "console.log('submit-->'+this.id)";
-async function initViews(page,parentId) {
+async function initViews(node,parentId) {
     var x = 0;
-    for (var i = 0; i < page.length; i++) {
-        var view = page[i];
+    for (var i = 0; i < node.length; i++) {
+        var view = node[i];
         if (view.id == null || view.id == "") {
             view.id = parentId + "_" + x;
             x++;
@@ -81,9 +81,8 @@ async function treeObserver(){
     observer.observe(targetNode, config);
 }
 async function main(){
-var page = document.childNodes;
-await initViews(page,"root");
-page = document.getElementsByTagName("*");
+await initViews(document.childNodes,"root");
+
 await logInputs();
 await logClicks();
 await logSelections();
