@@ -1,4 +1,3 @@
-var page = document.childNodes;
 var inputs = document.getElementsByTagName("input");
 var selections = document.getElementsByTagName("select");
 var eventBuffer;
@@ -62,7 +61,23 @@ async function logClicks() {
         }
     }
 }
+async function treeObserver(){
+// Callback function to execute when mutations are observed
+    var callback = async function(mutationsList) {
+        await main();
+    };
+    var targetNode = document.getElementsByTagName('html')[0];
+    if(!targetNode) targetNode = document.getElementsByTagName('body')[0];
+    var config = {
+        attributes: false,
+        childList: true,
+        subtree: true
+    };
+    var observer = new MutationObserver(callback);
+    observer.observe(targetNode, config);
+}
 async function main(){
+var page = document.childNodes;
 await initViews(page,"root");
 page = document.getElementsByTagName("*");
 await logInputs();
@@ -71,3 +86,4 @@ await logSelections();
 }
 
 main();
+treeObserver();
