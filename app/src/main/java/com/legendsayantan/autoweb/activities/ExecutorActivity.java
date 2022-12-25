@@ -1,13 +1,12 @@
 package com.legendsayantan.autoweb.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.ContextMenu;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -27,6 +26,7 @@ import com.legendsayantan.autoweb.BuildConfig;
 import com.legendsayantan.autoweb.R;
 import com.legendsayantan.autoweb.interfaces.AutomationData;
 import com.legendsayantan.autoweb.workers.ScriptRunner;
+import com.legendsayantan.autoweb.workers.WebDriver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,6 +44,7 @@ public class ExecutorActivity extends AppCompatActivity {
     TextView urlText;
     ScriptRunner runner;
     String code = "";
+    WebDriver driver;
     ConstraintLayout loader;
     boolean started = false;
     @SuppressLint({"MissingInflatedId", "SetJavaScriptEnabled"})
@@ -63,21 +64,7 @@ public class ExecutorActivity extends AppCompatActivity {
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("dark",false)?
                     WebSettings.FORCE_DARK_ON:WebSettings.FORCE_DARK_OFF);
         }
-        webView.getSettings().setSupportZoom(true);
-        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setBuiltInZoomControls(true);
-        webView.getSettings().setDisplayZoomControls(false);
-        webView.getSettings().setDomStorageEnabled(true);
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.setScrollbarFadingEnabled(false);
-        webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
-        });
+        driver = new WebDriver(this,webView);
         code = readAsset("default_script.js");
         back.setOnClickListener(v -> {
             if(webView.canGoBack())webView.goBack();
@@ -116,6 +103,16 @@ public class ExecutorActivity extends AppCompatActivity {
         }
         webView.loadUrl(data.jsActions.get(0).getUrl());
         if(BuildConfig.DEBUG)System.out.println(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("actions","[]"));
+        runner = new ScriptRunner(data);
+        runner.setOnPause(()->{
+            pauseExecution();
+            Toast.makeText(getApplicationContext(),"Script Paused.",Toast.LENGTH_SHORT).show();
+        });
+    }
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        driver.createMenu(menu);
     }
     String readAsset(String file){
         StringBuilder data = new StringBuilder();
@@ -129,7 +126,7 @@ public class ExecutorActivity extends AppCompatActivity {
                 data.append(mLine).append("\n");
             }
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(),"could not execute javascript code",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"could not read metadata, app might be corrupted.",Toast.LENGTH_LONG).show();
         }
         return data.toString();
     }
@@ -148,11 +145,6 @@ public class ExecutorActivity extends AppCompatActivity {
         btn.setOnClickListener((v)->{
             Toast.makeText(getApplicationContext(),"Paused.",Toast.LENGTH_SHORT).show();
             pauseExecution();
-        });
-        runner = new ScriptRunner(data);
-        runner.setOnPause(()->{
-            pauseExecution();
-            Toast.makeText(getApplicationContext(),"Script Paused.",Toast.LENGTH_SHORT).show();
         });
         runner.executeOn(webView,code,()->{
             loader.setVisibility(View.VISIBLE);

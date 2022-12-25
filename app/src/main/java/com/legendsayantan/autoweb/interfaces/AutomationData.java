@@ -102,8 +102,8 @@ public class AutomationData {
                 automationData.jsActions.remove(index);
                 continue;
             }
-//            if (automationData.jsActions.get(index).actionType == JsAction.ActionType.click &&
-//                    automationData.jsActions.get(index + 1).actionType == JsAction.ActionType.click &&
+//            if (automationData.jsActions.get(index).type == JsAction.Type.click &&
+//                    automationData.jsActions.get(index + 1).type == JsAction.Type.click &&
 //                    automationData.jsActions.get(index).getElement().equals(automationData.jsActions.get(index + 1).getElement()) &&
 //                    Long.parseLong(automationData.jsActions.get(index+1).getValue()) - Long.parseLong(automationData.jsActions.get(index).getValue()) < 50) {
 //                automationData.jsActions.remove(index);

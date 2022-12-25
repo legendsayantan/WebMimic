@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -105,9 +104,23 @@ public class MainActivity extends AppCompatActivity {
                     clipboard.setPrimaryClip(clip);
                     Toast.makeText(getApplicationContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
                 });
+                Button change_color = new Button(getApplicationContext());
+                change_color.setText("Change color");
+                change_color.getBackground().setColorFilter(ContextCompat.getColor(this, com.google.android.material.R.color.design_default_color_secondary_variant), PorterDuff.Mode.MULTIPLY);
+                change_color.setOnClickListener(v -> {
+                    data.get(position).color = (data.get(position).color + 1) % 4;
+                    data.remove(data.size() - 1);
+                    try {
+                        saveList(data);
+                    } catch (JsonProcessingException e) {
+                        Toast.makeText(getApplicationContext(), "Error while saving", Toast.LENGTH_SHORT).show();
+                    }
+                    onResume();
+                });
                 layout.addView(title);
                 layout.addView(delete);
                 layout.addView(share);
+                layout.addView(change_color);
             }
             TextView title2 = new TextView(getApplicationContext());
             title2.setText("App Settings");
@@ -186,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<AutomationData> getList() throws JsonProcessingException {
         String data = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("actions", "[]");
         final ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(data, new TypeReference<ArrayList<AutomationData>>() {
-        });
+        return objectMapper.readValue(data, new TypeReference<ArrayList<AutomationData>>(){});
     }
 
     public void saveList(ArrayList<AutomationData> list) throws JsonProcessingException {

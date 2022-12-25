@@ -7,19 +7,17 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.InputType;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
@@ -34,6 +32,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.legendsayantan.autoweb.R;
 import com.legendsayantan.autoweb.interfaces.AutomationData;
 import com.legendsayantan.autoweb.interfaces.JsAction;
+import com.legendsayantan.autoweb.workers.WebDriver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,6 +52,7 @@ public class TrainerActivity extends AppCompatActivity {
     String code = "console.log('start trainer mode');";
     String windowParams;
     ConstraintLayout loader;
+    WebDriver driver;
     Snackbar scrollsaver;
     @SuppressLint({"MissingInflatedId", "SetJavaScriptEnabled"})
     @Override
@@ -67,34 +67,10 @@ public class TrainerActivity extends AppCompatActivity {
         back = findViewById(R.id.back);
         loader = findViewById(R.id.loader);
         editText = findViewById(R.id.editText);
-        webView.getSettings().setSupportZoom(true);
-        WebView.setWebContentsDebuggingEnabled(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setBuiltInZoomControls(true);
-        webView.getSettings().setDisplayZoomControls(false);
-        webView.getSettings().setDomStorageEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            webView.getSettings().setForceDark(
-                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                            .getBoolean("dark",false)?
-                            WebSettings.FORCE_DARK_ON:WebSettings.FORCE_DARK_OFF);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            webView.getSettings().setAlgorithmicDarkeningAllowed(PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                    .getBoolean("dark",false));
-        }
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.setDownloadListener((url, userAgent, contentDisposition, mimetype, contentLength) -> {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
-        });
-        webView.setScrollbarFadingEnabled(false);
+        driver = new WebDriver(this,webView);
         code = readAsset("trainer.js");
         webView.loadUrl("https://www.google.com");
-        initialiseTestMode();
+        initialiseTrainer();
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -172,7 +148,14 @@ public class TrainerActivity extends AppCompatActivity {
             snackbar.show();
         }
     }
-    public void initialiseTestMode(){
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        driver.createMenu(menu);
+    }
+
+    public void initialiseTrainer(){
         webView.setWebChromeClient(new WebChromeClient(){
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
@@ -238,7 +221,7 @@ public class TrainerActivity extends AppCompatActivity {
             name.setHintTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             name.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             EditText time = new EditText(getApplicationContext());
-            time.setHint("Delay between actions in ms (250+)"); //250ms is the minimum delay between actions
+            time.setHint("Delay between actions in ms (249+)"); //250ms is the minimum delay between actions
             time.setHintTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             time.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             time.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -252,7 +235,7 @@ public class TrainerActivity extends AppCompatActivity {
                         if(name.getText().toString().isEmpty())return;
                         try{
                             data.setName(name.getText().toString());
-                            data.setDelay(Integer.parseInt(time.getText().toString()));
+                            data.setDelay(Integer.parseInt(time.getText().toString().isEmpty()? "0" : time.getText().toString()));
                             data.jsActions.add(new JsAction(webView.getUrl(),JsAction.ActionType.pause));
                             ArrayList<AutomationData> allData = getList();
                             optimise(data);
