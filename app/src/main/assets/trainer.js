@@ -4,17 +4,24 @@
 var page = document.getElementsByTagName("*");
 var inputs = document.getElementsByTagName("input");
 var selections = document.getElementsByTagName("select");
-var eventBuffer;
-var clicker = "event = event || window.event;"
-+"var source = event.target || event.srcElement;"
-+"if(eventBuffer!=event)console.log('click-->'+source.id);"
-+"eventBuffer=window.event;";
-var changer = "console.log('change-->'+this.id+'-->'+this.value)";
-var submitter = "console.log('submit-->'+this.id)";
+var eventBuffer = null;
+function changer(event) {
+    var source = event.target || event.srcElement;
+    console.log('change-->'+source.id+'-->'+source.value);
+}
+function clicker(){
+    var event = event || window.event;
+    if(event==null ||(event.type!='click' && event.type!='input'))return;
+    var source = event.target || event.srcElement;
+    if(source.nodeName == "SELECT")return;
+    if(eventBuffer!=event)console.log('click-->'+source.id);
+    eventBuffer=window.event;
+}
+
 async function initViews(node,parentId) {
-    var x = 0;
+    let x = 0;
     for (var i = 0; i < node.length; i++) {
-        var view = node[i];
+        let view = node[i];
         if (view.id == null || view.id == "") {
             view.id = parentId + "_" + x;
             x++;
@@ -26,48 +33,35 @@ async function initViews(node,parentId) {
 }
 async function logInputs() {
     for (var i = 0; i < inputs.length; i++) {
-        var element = inputs[i];
-        if(element.hasAttribute("onclick") && element.getAttribute('onclick')!=clicker) {
-            element.setAttribute("onclick", element.getAttribute('onclick')+";"+clicker);
-        }else{
-            element.setAttribute("onclick",clicker);
-        }
-        if(element.hasAttribute("onkeyup") && element.getAttribute('onkeyup')!=changer) {
-            element.setAttribute("onkeyup", element.getAttribute('onkeyup')+";"+changer);
-        }else{
-            element.setAttribute("onkeyup",changer);
-        }
-
+        let element = inputs[i];
+        element.addEventListener('click',function(e){
+            clicker();
+        });
+        element.addEventListener('keyup',function(e){
+            if(e.isTrusted)changer(e);
+        });
     }
 }
 async function logSelections(){
     for (var i = 0; i < selections.length; i++) {
-        var element = selections[i];
-        if(element.hasAttribute("onchange") && element.getAttribute('onchange')!=changer) {
-            element.setAttribute("onchange", element.getAttribute('onchange')+";"+changer);
-        }else{
-            element.setAttribute("onchange",changer);
-        }
-        //remove onclick attribute
-        if(element.hasAttribute("onclick")) {
-            if(element.getAttribute('onclick')==clicker)element.removeAttribute("onclick");
-            else element.setAttribute("onclick",element.getAttribute('onclick').replace(clicker,""));
-        }
+        let element = selections[i];
+        element.addEventListener('change', function(e){
+            if(e.isTrusted)changer(e);
+        });
     }
 }
 async function logClicks() {
     for (var i = 0; i < page.length; i++) {
         var element = page[i];
-        if(element.hasAttribute("onclick") && element.getAttribute('onclick')!=clicker) {
-            element.setAttribute("onclick", element.getAttribute('onclick')+";"+clicker);
-        }else{
-            element.setAttribute("onclick",clicker);
-        }
+        element.addEventListener('click', function(e){
+            clicker();
+        });
     }
 }
+
 async function treeObserver(){
 // Callback function to execute when mutations are observed
-    var callback = async function(mutationsList) {
+    var callback = async function() {
         await main();
     };
     var targetNode = document.getElementsByTagName('html')[0];
@@ -82,9 +76,8 @@ async function treeObserver(){
 }
 async function main(){
 await initViews(document.childNodes,"root");
-
-await logInputs();
 await logClicks();
+await logInputs();
 await logSelections();
 }
 

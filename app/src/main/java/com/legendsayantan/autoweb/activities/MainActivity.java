@@ -178,10 +178,21 @@ public class MainActivity extends AppCompatActivity {
             checkBox2.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("auto", isChecked).apply();
             });
+            CheckBox checkBox3 = new CheckBox(getApplicationContext());
+            checkBox3.setText("Use fallback algorithm? (long press)");
+            checkBox3.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                checkBox3.setTooltipText("Switch to the old training algorithm if the updated one performs worse.");
+            }
+            checkBox3.setChecked(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("fallback", false));
+            checkBox3.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("fallback", isChecked).apply();
+            });
             layout.addView(title2);
             layout.addView(add);
             layout.addView(checkBox);
             layout.addView(checkBox2);
+            layout.addView(checkBox3);
             TextView about = new TextView(getApplicationContext());
             about.setText("Made by @legendsayantan");
             about.setTextSize(15);

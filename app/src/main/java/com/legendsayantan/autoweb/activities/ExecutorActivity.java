@@ -65,7 +65,7 @@ public class ExecutorActivity extends AppCompatActivity {
                     WebSettings.FORCE_DARK_ON:WebSettings.FORCE_DARK_OFF);
         }
         driver = new WebDriver(this,webView);
-        code = readAsset("default_script.js");
+        code = readAsset("default.js");
         back.setOnClickListener(v -> {
             if(webView.canGoBack())webView.goBack();
             else ExecutorActivity.super.onBackPressed();

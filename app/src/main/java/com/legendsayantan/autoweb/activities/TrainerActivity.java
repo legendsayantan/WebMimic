@@ -68,7 +68,9 @@ public class TrainerActivity extends AppCompatActivity {
         loader = findViewById(R.id.loader);
         editText = findViewById(R.id.editText);
         driver = new WebDriver(this,webView);
-        code = readAsset("trainer.js");
+        code = readAsset("trainer"+
+                (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("fallback",false)?"_fallback":"")
+                +".js");
         webView.loadUrl("https://www.google.com");
         initialiseTrainer();
         webView.setWebViewClient(new WebViewClient(){
