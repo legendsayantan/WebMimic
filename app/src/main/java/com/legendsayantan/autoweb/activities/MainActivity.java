@@ -13,7 +13,9 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -34,6 +36,7 @@ import com.legendsayantan.autoweb.adapters.GridAdapter;
 import com.legendsayantan.autoweb.interfaces.AutomationData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     ArrayList<AutomationData> data;
@@ -43,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        findViewById(R.id.container).setBackgroundColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
+        //set action bar color
+        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground)));
     }
 
     @SuppressLint("HardwareIds")

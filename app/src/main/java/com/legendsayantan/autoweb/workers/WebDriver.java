@@ -19,7 +19,7 @@ import com.legendsayantan.autoweb.BuildConfig;
  */
 public class WebDriver {
     Activity activity;
-    private WebView webView;
+    private final WebView webView;
     public WebDriver(Activity activity , WebView webView) {
         this.activity = activity;
         this.webView = webView;

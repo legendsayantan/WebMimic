@@ -4,6 +4,7 @@ import static com.legendsayantan.autoweb.interfaces.AutomationData.optimise;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -59,6 +60,8 @@ public class TrainerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trainer);
+        findViewById(R.id.container).setBackgroundColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
         //remove action bar
         Objects.requireNonNull(getSupportActionBar()).hide();
         webView=findViewById(R.id.webView);
@@ -89,7 +92,6 @@ public class TrainerActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
                 loader.setVisibility(View.GONE);
             }
-
             @Override
             public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
                 editText.setText(url);
@@ -148,6 +150,7 @@ public class TrainerActivity extends AppCompatActivity {
                 }
             });
             snackbar.show();
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         }
     }
 
@@ -227,6 +230,7 @@ public class TrainerActivity extends AppCompatActivity {
             time.setHintTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             time.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             time.setInputType(InputType.TYPE_CLASS_NUMBER);
+            time.setText("500");
             linearLayout.addView(name);
             linearLayout.addView(time);
             linearLayout.setPadding(25,10,25,10);
@@ -238,7 +242,7 @@ public class TrainerActivity extends AppCompatActivity {
                         try{
                             data.setName(name.getText().toString());
                             data.setDelay(Integer.parseInt(time.getText().toString().isEmpty()? "0" : time.getText().toString()));
-                            data.jsActions.add(new JsAction(webView.getUrl(),JsAction.ActionType.pause));
+                            data.jsActions.add(new JsAction(data.jsActions.size()==0?webView.getUrl():"",JsAction.ActionType.pause));
                             ArrayList<AutomationData> allData = getList();
                             optimise(data);
                             System.out.println(AutomationData.toJson(data));

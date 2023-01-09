@@ -2,6 +2,7 @@ package com.legendsayantan.autoweb.activities;
 
 import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -52,6 +54,8 @@ public class ExecutorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_executor);
+        findViewById(R.id.container).setBackgroundColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
         Objects.requireNonNull(getSupportActionBar()).hide();
         webView=findViewById(R.id.webView);
         btn = findViewById(R.id.btn);
@@ -59,16 +63,14 @@ public class ExecutorActivity extends AppCompatActivity {
         urlText = findViewById(R.id.urlText);
         loader = findViewById(R.id.loader);
         loader.setVisibility(View.GONE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            webView.getSettings().setForceDark(
-                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("dark",false)?
-                    WebSettings.FORCE_DARK_ON:WebSettings.FORCE_DARK_OFF);
+        if(Configuration.ORIENTATION_LANDSCAPE==getResources().getConfiguration().orientation){
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         }
         driver = new WebDriver(this,webView);
         code = readAsset("default.js");
         back.setOnClickListener(v -> {
-            if(webView.canGoBack())webView.goBack();
-            else ExecutorActivity.super.onBackPressed();
+            if(runner!=null)runner.resetExecution();
+            super.onBackPressed();
         });
         try {
             data = getList().get(getIntent().getIntExtra("data",-1));
@@ -140,6 +142,7 @@ public class ExecutorActivity extends AppCompatActivity {
         });
     }
     public void resumeExecution(){
+        if(execution)return;
         execution =true;
         btn.setImageDrawable(AppCompatResources.getDrawable(getApplicationContext(), R.drawable.ic_baseline_pause_circle_outline_24));
         btn.setOnClickListener((v)->{
@@ -161,8 +164,11 @@ public class ExecutorActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(runner!=null)runner.resetExecution();
-        super.onBackPressed();
+        if(webView.canGoBack())webView.goBack();
+        else {
+            finish();
+            ExecutorActivity.super.onBackPressed();
+        }
 
     }
 }
