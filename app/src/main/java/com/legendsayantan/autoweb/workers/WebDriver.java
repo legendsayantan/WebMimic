@@ -62,7 +62,7 @@ public class WebDriver {
                 result.getType() == WebView.HitTestResult.SRC_ANCHOR_TYPE) {
 
             // Set the title for context menu
-            menu.setHeaderTitle("\t\t\t\t\t\t\t\t\t\t ◦ ◉ ⦿ Select Option ⦿ ◉ ◦ \t");
+            menu.setHeaderTitle("\t\t\t\t\tSelect Option ⦿ ◉ ◦ \t");
 
             // Add an item to the menu
             menu.add(0, 1, 0, " \t \t➤\t Copy URL")

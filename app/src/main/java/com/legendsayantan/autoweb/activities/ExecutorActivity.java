@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.legendsayantan.autoweb.BuildConfig;
 import com.legendsayantan.autoweb.R;
 import com.legendsayantan.autoweb.interfaces.AutomationData;
+import com.legendsayantan.autoweb.workers.ColorParser;
 import com.legendsayantan.autoweb.workers.ScriptRunner;
 import com.legendsayantan.autoweb.workers.WebDriver;
 
@@ -54,12 +55,14 @@ public class ExecutorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_executor);
-        findViewById(R.id.container).setBackgroundColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
+        findViewById(R.id.container).setBackgroundColor(ColorParser.getPrimary(this));
+        getWindow().setStatusBarColor(ColorParser.getPrimary(this));
         Objects.requireNonNull(getSupportActionBar()).hide();
         webView=findViewById(R.id.webView);
         btn = findViewById(R.id.btn);
+        btn.setColorFilter(ColorParser.getSecondary(this));
         back = findViewById(R.id.back);
+        back.setColorFilter(ColorParser.getSecondary(this));
         urlText = findViewById(R.id.urlText);
         loader = findViewById(R.id.loader);
         loader.setVisibility(View.GONE);

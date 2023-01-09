@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 
 import com.legendsayantan.autoweb.R;
 import com.legendsayantan.autoweb.interfaces.AutomationData;
+import com.legendsayantan.autoweb.workers.ColorParser;
 
 /**
  * @author legendsayantan
@@ -30,10 +31,12 @@ public class GridAdapter extends ArrayAdapter<AutomationData> {
         View returnView = inflater.inflate(R.layout.grid_item,  parent, false);
         TextView textView = returnView.findViewById(R.id.textView);
         CardView cardView = returnView.findViewById(R.id.cardView);
+        textView.setTextColor(ColorParser.getLight(activity));
         switch (getItem(position).color){
             case -1:
                 //set grey
-                cardView.setCardBackgroundColor(Color.parseColor("#808080"));
+                cardView.setCardBackgroundColor(ColorParser.getSecondary(activity));
+                textView.setTextColor(ColorParser.getPrimary(activity));
                 break;
             case 0:
                 //set dark red

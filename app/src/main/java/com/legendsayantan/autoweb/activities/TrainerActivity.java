@@ -24,6 +24,7 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,6 +34,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.legendsayantan.autoweb.R;
 import com.legendsayantan.autoweb.interfaces.AutomationData;
 import com.legendsayantan.autoweb.interfaces.JsAction;
+import com.legendsayantan.autoweb.workers.ColorParser;
 import com.legendsayantan.autoweb.workers.WebDriver;
 
 import java.io.BufferedReader;
@@ -60,14 +62,17 @@ public class TrainerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trainer);
-        findViewById(R.id.container).setBackgroundColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
+        findViewById(R.id.container).setBackgroundColor(ColorParser.getPrimary(this));
+        getWindow().setStatusBarColor(ColorParser.getPrimary(this));
         //remove action bar
         Objects.requireNonNull(getSupportActionBar()).hide();
         webView=findViewById(R.id.webView);
         btn = findViewById(R.id.btn);
+        btn.setColorFilter(ColorParser.getSecondary(this));
         btn2 = findViewById(R.id.btn2);
+        btn2.setColorFilter(ColorParser.getSecondary(this));
         back = findViewById(R.id.back);
+        back.setColorFilter(ColorParser.getSecondary(this));
         loader = findViewById(R.id.loader);
         editText = findViewById(R.id.editText);
         driver = new WebDriver(this,webView);
@@ -149,6 +154,10 @@ public class TrainerActivity extends AppCompatActivity {
                     });
                 }
             });
+            snackbar.getView().setBackgroundColor(ColorParser.getPrimary(this));
+            TextView snackbar_text = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+            snackbar_text.setTextColor(ColorParser.getSecondary(this));
+            snackbar.setActionTextColor(ColorParser.getSecondary(this));
             snackbar.show();
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         }
@@ -281,6 +290,10 @@ public class TrainerActivity extends AppCompatActivity {
             data.jsActions.add(new JsAction(webView.getUrl(),JsAction.ActionType.scroll,null,windowParams));
             scrollsaver.dismiss();
         });
+        scrollsaver.getView().setBackgroundColor(ColorParser.getPrimary(this));
+        TextView snackbar_text = scrollsaver.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        snackbar_text.setTextColor(ColorParser.getSecondary(this));
+        scrollsaver.setActionTextColor(ColorParser.getSecondary(this));
         scrollsaver.show();
     }
     public void removeScrollSaver(){

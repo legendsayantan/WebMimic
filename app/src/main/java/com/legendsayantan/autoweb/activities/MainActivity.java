@@ -5,7 +5,7 @@ import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
 import static com.legendsayantan.autoweb.interfaces.AutomationData.optimise;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import androidx.cardview.widget.CardView;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -13,7 +13,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -21,6 +20,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.legendsayantan.autoweb.R;
 import com.legendsayantan.autoweb.adapters.GridAdapter;
 import com.legendsayantan.autoweb.interfaces.AutomationData;
+import com.legendsayantan.autoweb.workers.ColorParser;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -46,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.container).setBackgroundColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
-        getWindow().setStatusBarColor(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground));
+        findViewById(R.id.container).setBackgroundColor(ColorParser.getPrimary(this));
+        getWindow().setStatusBarColor(ColorParser.getPrimary(this));
         //set action bar color
-        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES ? R.color.ic_launcher_background : R.color.ic_launcher_foreground)));
+        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(ColorParser.getDark(this)));
     }
 
     @SuppressLint("HardwareIds")
@@ -75,17 +76,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         gridView.setOnItemLongClickListener((parent, view, position, id) -> {
-
+            CardView cardView = new CardView(getApplicationContext());
+            cardView.setCardBackgroundColor(ColorParser.getPrimary(MainActivity.this));
+            cardView.setRadius(50);
             LinearLayout layout = new LinearLayout(getApplicationContext());
             layout.setOrientation(LinearLayout.VERTICAL);
-            layout.setPadding(20, 20, 20, 20);
+            layout.setPadding(50, 20, 50, 20);
             if (position != data.size() - 1) {
                 TextView title = new TextView(getApplicationContext());
                 title.setText("What to do with " + data.get(position).getName() + "?");
                 title.setTextSize(25);
+                title.setTextColor(ColorParser.getSecondary(MainActivity.this));
+                title.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                 Button delete = new Button(getApplicationContext());
                 delete.setText("Delete");
-                delete.getBackground().setColorFilter(ContextCompat.getColor(this, com.google.android.material.R.color.design_default_color_secondary_variant), PorterDuff.Mode.MULTIPLY);
+                delete.getBackground().setColorFilter(ColorParser.getSecondary(MainActivity.this),PorterDuff.Mode.MULTIPLY);
+                delete.setTextColor(ColorParser.getPrimary(MainActivity.this));
                 delete.setOnClickListener(v -> {
                     data.remove(position);
                     data.remove(data.size() - 1);
@@ -99,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
                 });
                 Button share = new Button(getApplicationContext());
                 share.setText("Copy to clipboard");
-                share.getBackground().setColorFilter(ContextCompat.getColor(this, com.google.android.material.R.color.design_default_color_secondary_variant), PorterDuff.Mode.MULTIPLY);
+                share.getBackground().setColorFilter(ColorParser.getSecondary(MainActivity.this),PorterDuff.Mode.MULTIPLY);
+                share.setTextColor(ColorParser.getPrimary(MainActivity.this));
                 share.setOnClickListener(v -> {
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     ClipData clip = null;
@@ -113,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
                 });
                 Button change_color = new Button(getApplicationContext());
                 change_color.setText("Change color");
-                change_color.getBackground().setColorFilter(ContextCompat.getColor(this, com.google.android.material.R.color.design_default_color_secondary_variant), PorterDuff.Mode.MULTIPLY);
+                change_color.getBackground().setColorFilter(ColorParser.getSecondary(MainActivity.this),PorterDuff.Mode.MULTIPLY);
+                change_color.setTextColor(ColorParser.getPrimary(MainActivity.this));
                 change_color.setOnClickListener(v -> {
                     data.get(position).color = (data.get(position).color + 1) % 4;
                     data.remove(data.size() - 1);
@@ -132,9 +140,12 @@ public class MainActivity extends AppCompatActivity {
             TextView title2 = new TextView(getApplicationContext());
             title2.setText("App Settings");
             title2.setTextSize(25);
+            title2.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            title2.setTextColor(ColorParser.getSecondary(MainActivity.this));
             Button add = new Button(getApplicationContext());
             add.setText("Import new");
-            add.getBackground().setColorFilter(ContextCompat.getColor(this, com.google.android.material.R.color.design_default_color_secondary_variant), PorterDuff.Mode.MULTIPLY);
+            add.getBackground().setColorFilter(ColorParser.getSecondary(MainActivity.this),PorterDuff.Mode.MULTIPLY);
+            add.setTextColor(ColorParser.getPrimary(MainActivity.this));
             add.setOnClickListener(v -> {
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Import new")
@@ -162,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
                     Settings.Secure.ANDROID_ID).equals("ac3c9a8a7f2a3912")) {
                 Button easter_egg = new Button(getApplicationContext());
                 easter_egg.setText("Kill yourself");
+                easter_egg.getBackground().setColorFilter(ColorParser.getSecondary(MainActivity.this),PorterDuff.Mode.MULTIPLY);
+                easter_egg.setTextColor(ColorParser.getPrimary(MainActivity.this));
                 easter_egg.setOnClickListener(v -> {
                     Toast.makeText(getApplicationContext(), "Congrats! you have successfully killed yourself, now you don't need this app.", Toast.LENGTH_LONG).show();
                     System.exit(0);
@@ -169,15 +182,15 @@ public class MainActivity extends AppCompatActivity {
                 layout.addView(easter_egg);
             }
             CheckBox checkBox = new CheckBox(getApplicationContext());
-            checkBox.setText("Enable Dark Mode");
-            checkBox.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
+            checkBox.setText("Enable Dark Mode on websites?");
+            checkBox.setTextColor(ColorParser.getSecondary(MainActivity.this));
             checkBox.setChecked(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("dark", false));
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("dark", isChecked).apply();
             });
             CheckBox checkBox2 = new CheckBox(getApplicationContext());
-            checkBox2.setText("Enable Auto Play");
-            checkBox2.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
+            checkBox2.setText("Enable Auto Play? (long press for info)");
+            checkBox2.setTextColor(ColorParser.getSecondary(MainActivity.this));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 checkBox2.setTooltipText("Automatically plays the actions when the page is loaded");
             }
@@ -186,8 +199,8 @@ public class MainActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putBoolean("auto", isChecked).apply();
             });
             CheckBox checkBox3 = new CheckBox(getApplicationContext());
-            checkBox3.setText("Use fallback algorithm? (long press)");
-            checkBox3.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
+            checkBox3.setText("Use fallback algorithm? (long press for info)");
+            checkBox3.setTextColor(ColorParser.getSecondary(MainActivity.this));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 checkBox3.setTooltipText("Switch to the old training algorithm if the updated one performs worse.");
             }
@@ -203,12 +216,16 @@ public class MainActivity extends AppCompatActivity {
             TextView about = new TextView(getApplicationContext());
             about.setText("Made by @legendsayantan");
             about.setTextSize(15);
+            about.setPadding(0,50,0,0);
+            about.setTextColor(ColorParser.getSecondary(MainActivity.this));
             about.setGravity(Gravity.CENTER);
             layout.addView(about);
+            cardView.addView(layout);
             dialog = new AlertDialog.Builder(MainActivity.this)
-                    .setView(layout)
-                    .setPositiveButton("Close", null)
-                    .show();
+                    .setView(cardView)
+                    .create();
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            dialog.show();
             return true;
         });
         super.onResume();
