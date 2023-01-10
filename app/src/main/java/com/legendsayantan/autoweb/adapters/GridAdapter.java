@@ -26,9 +26,11 @@ import com.legendsayantan.autoweb.workers.ColorParser;
  */
 public class GridAdapter extends ArrayAdapter<AutomationData> {
     Activity activity;
+    boolean animate;
     public GridAdapter(@androidx.annotation.NonNull Activity activity, int resource, @androidx.annotation.NonNull java.util.List<AutomationData> objects) {
         super(activity, resource, objects);
         this.activity = activity;
+        animate = true;
     }
     @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
     @Override
@@ -65,8 +67,10 @@ public class GridAdapter extends ArrayAdapter<AutomationData> {
 
         }
         textView.setText(getItem(position).getName());
-        cardView.setAlpha(0);
-        cardView.animate().alpha(1).setDuration(500).setStartDelay(position * 100L).start();
+        if(animate){
+            cardView.setAlpha(0);
+            cardView.animate().alpha(1).setDuration(500).setStartDelay(position * 100L).start();
+        }
         returnView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -92,5 +96,10 @@ public class GridAdapter extends ArrayAdapter<AutomationData> {
         return returnView;
     }
 
+    @Override
+    public void notifyDataSetChanged() {
+        animate = false;
+        super.notifyDataSetChanged();
+    }
 }
 

@@ -43,7 +43,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     ArrayList<AutomationData> data;
     AlertDialog dialog = null;
-
+    GridAdapter gridAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         data.add(new AutomationData("+\nRecord new", -1));
-        gridView.setAdapter(new GridAdapter(this, R.layout.grid_item, data));
+        gridAdapter = new GridAdapter(this, R.layout.grid_item, data);
+        gridView.setAdapter(gridAdapter);
         gridView.setOnItemClickListener((parent, view, position, id) -> {
             if (position == data.size() - 1) {
                 Intent intent = new Intent(MainActivity.this, TrainerActivity.class);
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                     .setView(cardView)
                     .create();
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-            dialog.setOnDismissListener(dialog -> onResume());
+            dialog.setOnDismissListener(dialog -> gridAdapter.notifyDataSetChanged());
             dialog.show();
             return true;
         });
