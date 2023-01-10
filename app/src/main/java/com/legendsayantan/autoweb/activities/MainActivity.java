@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -225,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
                     .setView(cardView)
                     .create();
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            dialog.setOnDismissListener(dialog -> onResume());
             dialog.show();
             return true;
         });
