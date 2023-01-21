@@ -11,17 +11,18 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      
+
 
     - name: Zip folder
       run: zip -r WebMimic.zip extension/WebMimic
       
     - name: Get Release
       id: get_release
-      uses: actions/get-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: 'latest'
+      run: |
+        release=$(curl -X GET -H "Accept: application/vnd.github+json" https://api.github.com/repos/${{github.repository}}/releases/tags/${{ env.RELEASE_TAG }}?access_token=${{ secrets.GITHUB_TOKEN }})
+        upload_url=$(echo $release | jq -r '.upload_url')
+        echo "::set-output name=upload_url::$upload_url"
         
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
