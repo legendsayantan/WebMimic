@@ -1,27 +1,36 @@
-name: Deploy latest extension to release
+name: Zip and Release
 
-# Run workflow on every push to the master branch
 on:
   push:
-    branches: [ master ]
+    branches:
+      - main
 
 jobs:
-  deploy-to-release:
-    # use ubuntu-latest image to run steps on
+  build:
     runs-on: ubuntu-latest
+
     steps:
-    # zip the folder
-    - name: create zip
-      uses: vimtor/action-zip@v1
-      with:
-        files: extension/WebMimic
-        dest: WebMimic.zip
-    # send to release
-    - name: release zip
-      uses: xresloader/upload-to-github-release@v1
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Zip folder
+      run: zip -r WebMimic.zip extension/WebMimic
+
+    - name: Create Release
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        file: "WebMimic.zip"
-        overwrite: true
-        
+        tag_name: ${{ env.RELEASE_TAG }}
+        release_name: Release ${{ env.RELEASE_TAG }}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: WebMimic.zip
+        asset_name: WebMimic.zip
+        asset_content_type: application/zip
