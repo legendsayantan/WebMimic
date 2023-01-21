@@ -45,23 +45,23 @@ public class GridAdapter extends ArrayAdapter<AutomationData> {
         cardView.setCardBackgroundColor(ColorParser.getPrimary(activity));
         switch (getItem(position).color){
             case -1:
-                //set grey
+                //set accent color
                 cardView.setStrokeColor(ColorParser.getSecondary(activity));
                 break;
             case 0:
-                //set glassy red
+                //set red
                 cardView.setStrokeColor(Color.parseColor("#FF0000"));
                 break;
             case 1:
-                //set glassy green
+                //set green
                 cardView.setStrokeColor(Color.parseColor("#00FF00"));
                 break;
             case 2:
-                //set glassy yellow
+                //set yellow
                 cardView.setStrokeColor(Color.parseColor("#FFFF00"));
                 break;
             case 3:
-                //set glassy blue
+                //set blue
                 cardView.setStrokeColor(Color.parseColor("#0000FF"));
                 break;
 
@@ -71,18 +71,15 @@ public class GridAdapter extends ArrayAdapter<AutomationData> {
             cardView.setAlpha(0);
             cardView.animate().alpha(1).setDuration(500).setStartDelay(position * 100L).start();
         }
-        returnView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    cardView.setCardBackgroundColor(cardView.getStrokeColor());
-                    textView.setTextColor(ColorParser.getPrimary(activity));
-                }else if(event.getAction() == MotionEvent.ACTION_UP){
-                    cardView.setCardBackgroundColor(ColorParser.getPrimary(activity));
-                    textView.setTextColor(ColorParser.getSecondary(activity));
-                }
-                return returnView.callOnClick();
+        returnView.setOnTouchListener((v, event) -> {
+            if(event.getAction() == MotionEvent.ACTION_DOWN){
+                cardView.setCardBackgroundColor(cardView.getStrokeColor());
+                textView.setTextColor(ColorParser.getPrimary(activity));
+            }else if(event.getAction() == MotionEvent.ACTION_UP){
+                cardView.setCardBackgroundColor(ColorParser.getPrimary(activity));
+                textView.setTextColor(ColorParser.getSecondary(activity));
             }
+            return returnView.callOnClick();
         });
         returnView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override

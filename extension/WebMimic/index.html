@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebMimic</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body>
+    
+    <div class="row">
+        <img style="height: 100px; width: 100px; scale: 60%;" src="images/icon.png"/>
+        <h1>WebMimic</h1>
+    </div>
+    <h4>Record and Replay user actions on websites.</h4>
+    <div class="row">
+        <button id="record" style="height: 50px;">+ Record New</button>
+        <button id="upload" style="height: 50px; justify-content: center; align-items: center;">
+            <img id="img0" src="images/upload.svg" style="height: 25px; width: 25px;"/>
+        </button>
+        <button id="pause" style="height: 50px; justify-content: center; align-items: center;">
+            <img id="img1" src="images/pause.svg" style="height: 25px; width: 25px;"/>
+        </button>
+        <div id="addpause" class="belowbutton" style="height: 47px; width: 10px; left: 19%; position: absolute;" clickable="true">
+            <img id="imgx" src="images/pause-save.svg" style="height: 50px; width: 20px; position: relative; left: 5px;"/>
+        </div>
+        <button id="save" style="height: 50px; justify-content: center; align-items: center;">
+            <img id="img2" src="images/download.svg" style="height: 20px; width: 20px;"/>
+        </button>
+        <button id="delete" style="height: 50px; justify-content: center; align-items: center;">
+            <img id="img3" src="images/delete.svg" style="height: 20px; width: 20px;"/>
+        </button>
+    </div>
+    <div id="saveform" class="row" style="margin: 25px 25px 75px 25px;">
+        <div style="float:left; margin: 0;">
+            <input type="text" id="name" placeholder="Automation Name"/>
+        </div>
+        <div style="float:right; margin: 0; justify-content: center; align-items: center; text-align: center;">
+            <span style="margin: 0;">Delay(ms):</span>
+            <input type="number" id="delay" placeholder="" value="250" min="250"/>
+        </div>
+    </div>
+    <ul id="list"></ul>
+    <p style="margin-top: 10px;" id="toast">WebMimic is currently in beta. If you find any bugs, please <a id="issue" href="/">report them</a>.</p>
+    <script src="bgcolor.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

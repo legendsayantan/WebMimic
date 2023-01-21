@@ -1,0 +1,25 @@
+{
+    "name": "WebMimic",
+    "version": "1.0.0",
+    "description": "Record and replay user actions on a website.",
+    "manifest_version": 3,
+    "author": "LegendSayantan",
+    "action":{
+        "default_popup": "index.html",
+        "default_title": "WebMimic"
+    },
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "host_permissions": [
+        "http://*/*","https://*/*"
+    ],
+    "permissions": [
+        "tabs","scripting" ,"activeTab","storage","webNavigation"
+    ],
+    "icons":{
+        "200":"images/icon.png"
+    }
+    
+}

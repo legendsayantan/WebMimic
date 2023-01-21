@@ -1,0 +1,147 @@
+HTML CSS JSResult Skip Results Iframe
+EDIT ON
+/* style sheet for the entire page */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 62.5%;
+  font-family: "Open Sans", sans-serif;
+  letter-spacing: 0.1rem;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background: linear-gradient(to right, rgb(169, 116, 116), rgb(87, 87, 167));
+}
+
+.row{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  align-self: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  width: auto;
+  height: auto;
+  text-align: center;
+  margin: auto 1.5rem auto 0;
+}
+p {
+  width: 70%;
+  height: auto;
+  padding: 1rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+strong {
+  text-decoration: underline;
+  text-underline-position: under;
+}
+
+button {
+  margin: auto;
+  padding: 0 1rem; 
+  text-align: center;
+  border: 0.1rem solid grey;
+  border-radius: 1rem;
+  background-color: rgb(0, 17, 252);
+  z-index: 1;
+}
+button:hover {
+  box-shadow: 0.2rem 0.2rem 0.2rem rgba(128, 128, 128, 0.5);
+}
+button:active {
+  background-color: rgb(39, 132, 255);
+  box-shadow: 0.1rem rgba(0, 110, 255, 0.5)ey;
+}
+
+.belowbutton{
+  margin: auto;
+  padding: 0 1rem; 
+  text-align: center;
+  border: 0.1rem solid grey;
+  border-radius: 1rem;
+  background-color: rgb(0, 17, 252);
+  z-index: 0;
+}
+#propertyValue,
+#showcolors {
+  font-size: 2rem;
+  font-family: "Inconsolata", monospace;
+  width: 60%;
+  margin: 2.5rem auto 7rem auto;
+  padding: 1rem 0;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: black;
+  font-weight: light;
+}
+
+footer {
+  font-size: 1rem;
+  line-height: 2rem;
+  word-spacing: 0.15rem;
+  padding: 0.5rem 0;
+  color: white;
+  background-color: black;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+footer > i {
+  color: red;
+}
+
+hr {
+  margin: 0;
+  padding: 0.2rem;
+  background-color: dodgerblue;
+  width: 15%;
+  margin: 1rem auto 2rem auto;
+  border-radius: 10rem;
+  border: 0;
+}
+
+#takecontrol {
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+input[type=text]{
+  height: 25px;
+  width: 150px;
+  box-sizing: border-box;
+}
+input[type=number]{
+  height: 25px;
+  width: 50px;
+  box-sizing: border-box;
+}
+ul{
+  margin: 20px 20px 0px 0px;
+  text-align: center;
+}
+.visibleOnHover{
+  visibility: hidden;
+}
+li{
+  padding: 0 1rem;
+  font-size: medium;
+  border-radius: 1rem;
+  margin: 5px;
+}
+li:hover{
+  background-color: rgba(128, 128, 128, 0.4);
+}
+li:hover .visibleOnHover{
+  visibility: inherit;
+}

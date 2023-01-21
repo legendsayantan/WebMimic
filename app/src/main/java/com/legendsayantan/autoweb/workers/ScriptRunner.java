@@ -24,7 +24,7 @@ public class ScriptRunner {
     private int pausedIndex = 0;
     ArrayList<JsAction> jsActions ;
     Runnable onPause = () -> {};
-    long delay = 100;
+    long delay = 200;
 
     public ScriptRunner(ArrayList<JsAction> jsActions) {
         this.jsActions = jsActions;
@@ -46,6 +46,7 @@ public class ScriptRunner {
             processExecution(webView,code,pauseCallBack, resumeCallback, activity);
         });
     }
+    //Warning: spaghetti code ahead
     public void processExecution(WebView webView,String code,Runnable pauseCallBack, Runnable resumeCallback, Activity activity){
         worker = new Timer();
         worker.scheduleAtFixedRate(new TimerTask() {
