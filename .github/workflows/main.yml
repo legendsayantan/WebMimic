@@ -19,7 +19,7 @@ jobs:
 
     - name: Get release upload URL
       id: upload-url
-      run: echo "::set-output name=url::$(curl -s https://api.github.com/repos/${{ env.GITHUB_REPOSITORY }}/releases/latest?access_token=${{ secrets.GITHUB_TOKEN }} | jq -r .upload_url | cut -d '{' -f1)"
+      run: echo "::set-output name=url::$(curl -s https://api.github.com/repos/legendsayantan/WebMimic/releases/latest?access_token=${{ secrets.GITHUB_TOKEN }} | jq -r .upload_url | cut -d '{' -f1)"
       
     - name: Set UPLOAD_URL env variable
       run: echo "UPLOAD_URL=${UPLOAD_URL}" >> $GITHUB_ENV
