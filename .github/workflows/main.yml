@@ -17,22 +17,16 @@ jobs:
     - name: Compress extension folder
       run: zip -r WebMimic.zip extension/WebMimic
 
-    - name: Get release upload URL
+    - name: Get release
       id: upload-url
       run: echo "::set-output name=url::$(curl -s https://api.github.com/repos/legendsayantan/WebMimic/releases/latest?access_token=${{ secrets.GITHUB_TOKEN }} | jq -r .upload_url | cut -d '{' -f1)"
       
-    - name: Set UPLOAD_URL env variable
-      run: echo "UPLOAD_URL=${UPLOAD_URL}" >> $GITHUB_ENV
-      
-    - name: Show upload url
-      run: echo "${UPLOAD_URL}" 
-
     - name: Publish to release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ env.UPLOAD_URL }}
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
         asset_path: WebMimic.zip
         asset_name: WebMimic.zip
         asset_content_type: application/zip
