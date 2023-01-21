@@ -23,6 +23,9 @@ jobs:
       
     - name: Set UPLOAD_URL env variable
       run: echo "UPLOAD_URL=${UPLOAD_URL}" >> $GITHUB_ENV
+      
+    - name: Show upload url
+      run: echo "${UPLOAD_URL}" 
 
     - name: Publish to release
       uses: actions/upload-release-asset@v1
