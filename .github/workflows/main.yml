@@ -1,0 +1,26 @@
+name: Deploy latest extension to release
+
+# Run workflow on every push to the master branch
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy-to-release:
+    # use ubuntu-latest image to run steps on
+    runs-on: ubuntu-latest
+    steps:
+    # zip the folder
+    - name: create zip
+      uses: montudor/action-zip@v1
+      with:
+        args: zip -qq -r WebMimic.zip extension/WebMimic
+    # send to release
+    - name: release zip
+      uses: xresloader/upload-to-github-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        file: "WebMimic.zip"
+        overwrite: true
+        
