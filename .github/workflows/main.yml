@@ -18,7 +18,7 @@ jobs:
       run: zip -r WebMimic.zip extension/WebMimic
 
     - name: Get release
-      id: upload-url
+      id: get_release
       run: echo "::set-output name=url::$(curl -s https://api.github.com/repos/legendsayantan/WebMimic/releases/latest?access_token=${{ secrets.GITHUB_TOKEN }} | jq -r .upload_url | cut -d '{' -f1)"
       
     - name: Publish to release
