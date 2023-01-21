@@ -19,8 +19,10 @@ jobs:
 
     - name: Get release
       id: get_release
-      run: echo "::set-output name=url::$(curl -s https://api.github.com/repos/legendsayantan/WebMimic/releases/latest?access_token=${{ secrets.GITHUB_TOKEN }} | jq -r .upload_url | cut -d '{' -f1)"
-      
+      uses: bruceadams/get-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+     
     - name: Publish to release
       uses: actions/upload-release-asset@v1
       env:
