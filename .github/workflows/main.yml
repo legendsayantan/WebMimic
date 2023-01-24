@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Compress extension folder
-      run: zip -r WebMimic.zip extension/WebMimic
+      run: cd extension/WebMimic ; zip -r WebMimic.zip *
 
     - name: Gets latest created release info
       id: latest_release_info
