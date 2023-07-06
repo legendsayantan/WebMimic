@@ -13,7 +13,7 @@ import java.util.Random;
  */
 
 public class AutomationData {
-    private String name;
+    private String name,agent;
     public ArrayList<JsAction> jsActions = new ArrayList<>();
     public int color;
     long delay;
@@ -36,30 +36,28 @@ public class AutomationData {
         this.desktopMode = desktopMode;
     }
 
-    public AutomationData(String name, ArrayList<JsAction> jsActions, long delay) {
-        this.name = name;
-        this.jsActions = jsActions;
+    public AutomationData(String name,String agent, ArrayList<JsAction> jsActions, long delay) {
+        this.agent = agent;
         this.delay = delay;
-        this.color = new Random().nextInt(4);
+        new AutomationData(name,jsActions);
     }
     public AutomationData(String name, ArrayList<JsAction> jsActions) {
         this.name = name;
         this.jsActions = jsActions;
-        this.color = new Random().nextInt(4);
+        new AutomationData();
     }
 
     public AutomationData() {
         this.color = new Random().nextInt(4);
     }
     public AutomationData(long delay) {
-        this.color = new Random().nextInt(4);
         this.delay = delay;
+        new AutomationData();
     }
 
-
-    public AutomationData(String s, int i) {
+    public AutomationData(String s, int c) {
         this.name = s;
-        this.color = i;
+        this.color = c;
     }
 
     public String getName() {
@@ -68,6 +66,14 @@ public class AutomationData {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUserAgent() {
+        return this.agent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.agent = agent;
     }
 
     public long getDelay() {

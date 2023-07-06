@@ -37,7 +37,6 @@ public class GridAdapter extends ArrayAdapter<AutomationData> {
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = activity.getLayoutInflater();
         View returnView = inflater.inflate(R.layout.grid_item,  parent, false);
-        LinearLayout container = returnView.findViewById(R.id.linearLayout);
         TextView textView = returnView.findViewById(R.id.textView);
         MaterialCardView cardView = returnView.findViewById(R.id.cardView);
         textView.setTextColor(ColorParser.getSecondary(activity));

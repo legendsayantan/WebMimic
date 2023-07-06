@@ -106,6 +106,11 @@ public class ExecutorActivity extends AppCompatActivity {
             webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36");
             webView.getSettings().setLoadWithOverviewMode(false);
         }
+        if(data.getUserAgent()!=null){
+            webView.getSettings().setUserAgentString(data.getUserAgent());
+        }else{
+            webView.getSettings().setUserAgentString(WebSettings.getDefaultUserAgent(getApplicationContext()));
+        }
         webView.loadUrl(data.jsActions.get(0).getUrl());
         if(BuildConfig.DEBUG)System.out.println(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("actions","[]"));
         runner = new ScriptRunner(data);

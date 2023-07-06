@@ -19,8 +19,10 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -170,6 +172,7 @@ public class TrainerActivity extends AppCompatActivity {
     }
 
     public void initialiseTrainer(){
+        webView.getSettings().setUserAgentString(WebSettings.getDefaultUserAgent(getApplicationContext()));
         webView.setWebChromeClient(new WebChromeClient(){
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
@@ -240,8 +243,12 @@ public class TrainerActivity extends AppCompatActivity {
             time.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             time.setInputType(InputType.TYPE_CLASS_NUMBER);
             time.setText("500");
+            CheckBox saveCustomAgent = new CheckBox(getApplicationContext());
+            saveCustomAgent.setText("Save user agent data with automation");
+            saveCustomAgent.setTextColor(getResources().getColor(com.google.android.material.R.color.design_default_color_secondary_variant));
             linearLayout.addView(name);
             linearLayout.addView(time);
+            linearLayout.addView(saveCustomAgent);
             linearLayout.setPadding(25,10,25,10);
             new AlertDialog.Builder(TrainerActivity.this)
                     .setTitle("Save these actions?")
@@ -250,11 +257,11 @@ public class TrainerActivity extends AppCompatActivity {
                         if(name.getText().toString().isEmpty())return;
                         try{
                             data.setName(name.getText().toString());
-                            data.setDelay(Integer.parseInt(time.getText().toString().isEmpty()? "0" : time.getText().toString()));
+                            data.setDelay(Integer.parseInt(time.getText().toString().isEmpty()? "250" : time.getText().toString()));
                             data.jsActions.add(new JsAction(data.jsActions.size()==0?webView.getUrl():"",JsAction.ActionType.pause));
+                            data.setUserAgent(saveCustomAgent.isChecked()?webView.getSettings().getUserAgentString():null);
                             ArrayList<AutomationData> allData = getList();
                             optimise(data);
-                            System.out.println(AutomationData.toJson(data));
                             allData.add(data);
                             saveList(allData);
                             super.onBackPressed();

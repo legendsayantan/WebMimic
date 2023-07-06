@@ -141,6 +141,7 @@ function populateList(data) {
         li.style.justifyContent = 'center';
         li.style.alignItems = 'center';
         list.appendChild(li);
+        li.style.cursor = 'pointer';
         document.getElementById('item_' + index).addEventListener('click', function () {
             chrome.runtime.sendMessage({ message: 'play', json: JSON.stringify(item) });
         });

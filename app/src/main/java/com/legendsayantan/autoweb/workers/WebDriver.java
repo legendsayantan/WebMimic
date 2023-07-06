@@ -2,6 +2,7 @@ package com.legendsayantan.autoweb.workers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.legendsayantan.autoweb.BuildConfig;
@@ -79,6 +81,24 @@ public class WebDriver {
                         String Pressed_url = result.getExtra();
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Pressed_url));
                         activity.startActivity(browserIntent);
+                        return false;
+                    });
+            menu.add(0,3,0," \t \t➤\t Modify user agent")
+                    .setOnMenuItemClickListener(menuItem -> {
+                        EditText user_agent = new EditText(activity);
+                        user_agent.setText(webView.getSettings().getUserAgentString());
+                        new AlertDialog.Builder(activity)
+                                .setTitle("Modify User Agent")
+                                .setMessage("Enter the user agent you want to use.")
+                                .setView(user_agent)
+                                .setPositiveButton("OK", (dialog, which) -> {
+                                    String ua = user_agent.getText().toString();
+                                    webView.getSettings().setUserAgentString(ua);
+                                })
+                                .setNegativeButton("Cancel", (dialog, which) -> {
+                                    dialog.cancel();
+                                })
+                                .show();
                         return false;
                     });
 
